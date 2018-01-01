@@ -6,7 +6,7 @@ Created on Sun Dec 31 02:29:40 2017
 @author: yvyas
 """
 import ConfigParser, sys, argparse, os
-from binance.client import Client as binance
+from binancewrapper.client import BinanceClient
 
 def parse_conf():
     conf = ConfigParser.ConfigParser()
@@ -26,7 +26,7 @@ def parse_args():
     args = parser.parse_args()
     api_key =  args.api_key
     api_secret = args.api_secret
-    print args
+
     if api_key is None or api_secret is None:
         print "reading credentials from profile {}".format(args.profile)
     
@@ -48,20 +48,21 @@ def parse_args():
     return {'api_key': api_key, 'api_secret': api_secret, 'exchange': exchange, 'cmd': args.cmd, 'symbol': args.symbol}
 
 def get_client(params):
-    print params
     exchange = params['exchange']
     if not exchange or exchange == "binance":
-        return binance(params['api_key'], params['api_secret'])
+        return BinanceClient(params['api_key'], params['api_secret'])
     else:
         print "exchange {} not supported yet".format(exchange)
 
 def main():
     args = parse_args()
     client = get_client(args)
-    # if cmd == "aggregate_trades"
-    trades = client.get_aggregate_trades(symbol=args['symbol'])
-    print trades
-    
+    resp = client.execute(args['cmd'], args['symbol'])
+    if resp is None:
+        print "client responded with nothing"
+    else:
+        print resp
+        
 if __name__ == "__main__":
     main()
     
