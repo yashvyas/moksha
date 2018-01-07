@@ -11,14 +11,14 @@ class PGTopicStore:
         port = kwargs.get('port', 5432)
         self.conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
 
-    def store_topic_data(self, topic, data, **kwargs):
+    def store_topic_data(self, topic, tradedata):
         key = kwargs.get('key', int(time.time()*1000*1000))
         curr = self.conn.cursor()
-        curr.execute("INSERT INTO {} (key, data) values (%s, %s)".format(key), (key, data))
+        curr.execute("INSERT INTO {} () values (%s, %s)".format(key), (key, data))
         conn.commit()
         curr.close()
 
-    def get_topic_data(self, topic, **kwargs)
+    def get_topic_data(self, topic):
         key = kwargs.get('key', None)
         statement = ""
 
@@ -32,6 +32,10 @@ class PGTopicStore:
         data = curr.fetchall()
         curr.close()
         return data
+
+#get exchange, symbol between 2 times
+#get max tradeid 
+
 
     def close(self):
         self.conn.close()
